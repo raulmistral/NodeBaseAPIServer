@@ -5,8 +5,8 @@ class Server {
     constructor() {
         this.app = express()
         this.port = process.env.PORT
-        this.baseApi = process.env.BASEAPI 
-        this.usersPath = '/usuarios'
+        this.baseApiPath = process.env.BASEAPIPATH 
+        this.usersPath = process.env.USERPATH
         
         // Middlewares
         this.middlewares();
@@ -24,16 +24,18 @@ class Server {
 
         // Lectura y parse del body a formato JSON
         this.app.use( express.json() )
+
     }
 
     routes() {
-        this.app.use('/api/usuarios', require('../routes/usuarios'))
+        const apiPath = this.baseApiPath + this.usersPath
+        this.app.use(apiPath, require('../routes/usuarios'))
         this.app.use(this.baseApi + this.usersPath, require('../routes/usuarios'))
     }
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log("Servidor correindo en  puerto ", this.port)
+            console.log("Servidor corriendo en puerto ", this.port)
         })
     }
 
