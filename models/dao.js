@@ -1,17 +1,41 @@
+/** 
+ * dao.js
+ * 
+ * MODELO DEL ACCESO A LA BASE DE DATOS
+ * 
+ * Contiene la Clase que define los accesos a la base de datps, permitiendo que el resto
+ * del servicio sea agnóstico a la base de datos y su api.
+ * 
+ * La clase define los métodos que serán llamados desde los distintos Data Access Objets y 
+ * ella los traduce a las llamadas a las api de la base de datos correspondiente
+ * 
+ * En este caso particular, DAO está definido para SQLite
+ */
+
 const sqlite3 = require('sqlite3')
 
+/**
+ * Clase que sera la base para definir los DAO de los objetos de negocio (ej.: usuarios)
+ *
+ * @class AppDAO
+ */
 class AppDAO {
   constructor(dbFilePath) {
     this.db = new sqlite3.Database(dbFilePath, (err) => {
       if (err) {
         console.log('No se conectó a la Base de Datos', err)
-      } 
-      //else {
-      //  console.log('Conectado a la base de datos')
-      //}
+      }
     })
   }
 
+  /**
+   * Permite ejecutar instruccciones SQL del tipo CREATE, INSERT, UPDATE, DELETE, etc. Ver api
+   *
+   * @param {string} sql - instruccion SQL a ser ejecutada
+   * @param {string} [params=[]] -  parametros a ser inyectados en la isntrucción SQL
+   * @returns {object} status (type, msg, changes)
+   * @memberof AppDAO
+   */
   run(sql, params = []) {
     let status = {}
     return new Promise((resolve, reject) => {
@@ -31,6 +55,15 @@ class AppDAO {
     })
   }
 
+  /**
+   * @method get
+   * Obtiene un registro de la base de datos. Devuelve una Promesa
+   *
+   * @param {string} sql - instruccion SQL a ser ejecutada
+   * @param {string} [params=[]] -  parametros a ser inyectados en la isntrucción SQL
+   * @returns {object} status (status.type, status.msg, result - objeto con el registro solicitado)
+   * @memberof AppDAO
+   */
   get(sql, params = []) {
     let retObj = {}
     let status = {}
@@ -57,6 +90,16 @@ class AppDAO {
     })
   }
 
+  /**
+   * @method all
+   * Devuelve un grupo de registros en un arreglo según alguna condicion dada por 
+   * la combinación sql / params
+   *
+   * @param {*} sql
+   * @param {*} [params=[]]
+   * @returns {object} status (status.type, status.msg, result - arreglo de objetos de usuarios solicitados)
+   * @memberof AppDAO
+   */
   all(sql, params = []) {
     let retObj = {}
     let status = {}
@@ -83,6 +126,12 @@ class AppDAO {
     })
   }
   
+  /**
+   * @method close
+   *
+   * @returns@returns {object} status (type, msg)
+   * @memberof AppDAO
+   */
   close() {
 
     let retObj = {}
